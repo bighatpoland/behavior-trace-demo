@@ -13,9 +13,9 @@ async function is_input_spam_1(input) {
         ]
     }    
 let response = await axios.post(CHATGPT_ENDPOINT, req, {
-    Headers : {
-        "Content-Type" : "application/json",
-        "Authorization" : 'Bearer ${OPENAI_API_KEY}'
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENAI_API_KEY}`
     }
 })
 
