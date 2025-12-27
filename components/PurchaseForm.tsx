@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Purchase, TriggerType } from "@/types";
-import { Plus } from "lucide-react";
+import { Plus, Camera } from "lucide-react";
+import BarcodeScanner from "./BarcodeScanner";
+import StarRating from "./StarRating";
 
 interface PurchaseFormProps {
   onAddPurchase: (purchase: Purchase) => void;
@@ -22,6 +24,9 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
   const [price, setPrice] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [trigger, setTrigger] = useState<TriggerType>("Boredom");
+  const [rating, setRating] = useState(0);
+  const [barcode, setBarcode] = useState("");
+  const [showScanner, setShowScanner] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,12 +36,19 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
       return;
     }
 
+    if (rating === 0) {
+      alert("Please rate how much you like this product (1-5 stars)");
+      return;
+    }
+
     const purchase: Purchase = {
       id: Date.now().toString(),
       itemName: itemName.trim(),
       price: parseFloat(price),
       date,
       trigger,
+      rating,
+      barcode: barcode || undefined,
       createdAt: Date.now(),
     };
 
@@ -47,6 +59,13 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
     setPrice("");
     setDate(new Date().toISOString().split("T")[0]);
     setTrigger("Boredom");
+    setRating(0);
+    setBarcode("");
+  };
+
+  const handleBarcodeScanned = (scannedBarcode: string) => {
+    setBarcode(scannedBarcode);
+    setShowScanner(false);
   };
 
   return (
@@ -121,6 +140,41 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
           </select>
         </div>
 
+        {/* Barcode Scanner */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Product Barcode (Optional)
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition"
+              placeholder="Scan or enter barcode"
+            />
+            <button
+              type="button"
+              onClick={() => setShowScanner(true)}
+              className="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+            >
+              <Camera className="w-5 h-5" />
+              Scan
+            </button>
+          </div>
+          {barcode && (
+            <p className="text-xs text-green-600 mt-1">✓ Barcode: {barcode}</p>
+          )}
+        </div>
+
+        {/* Star Rating */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            How much do you like this product? *
+          </label>
+          <StarRating rating={rating} onRatingChange={setRating} />
+        </div>
+
         <button
           type="submit"
           className="w-full bg-gradient-to-r from-amber-500 to-rose-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-amber-600 hover:to-rose-600 transition-all shadow-md hover:shadow-lg"
@@ -128,6 +182,14 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
           Track This Purchase
         </button>
       </form>
+
+      {/* Barcode Scanner Modal */}
+      {showScanner && (
+        <BarcodeScanner
+          onScan={handleBarcodeScanned}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
     </div>
   );
 }

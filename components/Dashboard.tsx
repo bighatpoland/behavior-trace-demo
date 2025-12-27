@@ -2,7 +2,8 @@
 
 import { Purchase } from "@/types";
 import { calculateStats, formatCurrency } from "@/lib/utils";
-import { TrendingUp, Brain, Trash2 } from "lucide-react";
+import { TrendingUp, Brain, Trash2, Barcode } from "lucide-react";
+import StarRating from "./StarRating";
 
 interface DashboardProps {
   purchases: Purchase[];
@@ -92,6 +93,16 @@ export default function Dashboard({ purchases, onDeletePurchase }: DashboardProp
                     <span className="font-medium">Triggered by:</span>{" "}
                     <span className="text-rose-600 font-semibold">{purchase.trigger}</span>
                   </p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-gray-700">Rating:</span>
+                    <StarRating rating={purchase.rating} readonly size="sm" />
+                  </div>
+                  {purchase.barcode && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+                      <Barcode className="w-3 h-3" />
+                      <span>{purchase.barcode}</span>
+                    </div>
+                  )}
                   <p className="text-xs text-gray-500">
                     {new Date(purchase.date).toLocaleDateString("en-US", {
                       weekday: "long",

@@ -12,6 +12,8 @@ export interface Purchase {
   price: number;
   date: string;
   trigger: TriggerType;
+  rating: number; // 1-5 stars
+  barcode?: string; // Optional barcode
   createdAt: number;
 }
 
