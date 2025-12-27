@@ -1,3 +1,9 @@
+/**
+ * Dashboard Component - Behavior Trace Display
+ * Copyright © 2025 Konstancja Tanjga (Big Hat Poland)
+ * All rights reserved.
+ */
+
 "use client";
 
 import { Purchase } from "@/types";
