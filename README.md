@@ -1,5 +1,8 @@
 # 🧠 Impulse Buy Budget Tracer
 
+> **Copyright © 2025 Konstancja Tanjga (Big Hat Poland)**  
+> All rights reserved.
+
 <div align="center">
 
 ![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
@@ -432,6 +435,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
+Copyright © 2025 Konstancja Tanjga (Big Hat Poland)
+
 This project is licensed under the MIT License.
 
 ---
@@ -447,6 +452,7 @@ This project is licensed under the MIT License.
 
 ## 📮 Contact
 
+**Author**: Konstancja Tanjga (Big Hat Poland)  
 **Repository**: [github.com/bighatpoland/behavior-trace-demo](https://github.com/bighatpoland/behavior-trace-demo)
 
 ---

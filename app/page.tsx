@@ -1,3 +1,9 @@
+/**
+ * Impulse Buy Budget Tracer - Main Page
+ * Copyright © 2025 Konstancja Tanjga (Big Hat Poland)
+ * All rights reserved.
+ */
+
 "use client";
 
 import { useState, useEffect } from "react";
