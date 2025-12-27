@@ -6,6 +6,8 @@ export type TriggerType =
   | "Late Night Scrolling"
   | "Peer Pressure";
 
+export type Currency = "USD" | "EUR" | "PLN";
+
 export interface Purchase {
   id: string;
   itemName: string;
@@ -14,6 +16,7 @@ export interface Purchase {
   trigger: TriggerType;
   rating: number; // 1-5 stars
   barcode?: string; // Optional barcode
+  currency: Currency; // Currency selection
   createdAt: number;
 }
 

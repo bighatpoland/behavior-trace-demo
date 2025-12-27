@@ -18,6 +18,18 @@ interface DashboardProps {
 
 export default function Dashboard({ purchases, onDeletePurchase }: DashboardProps) {
   const stats = calculateStats(purchases);
+  
+  // Get the most common currency from purchases
+  const getCurrency = () => {
+    if (purchases.length === 0) return "USD";
+    const currencyCounts = purchases.reduce((acc, p) => {
+      acc[p.currency] = (acc[p.currency] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    return Object.entries(currencyCounts).sort(([, a], [, b]) => b - a)[0][0];
+  };
+  
+  const defaultCurrency = getCurrency();
 
   if (purchases.length === 0) {
     return (
@@ -44,7 +56,7 @@ export default function Dashboard({ purchases, onDeletePurchase }: DashboardProp
             <h3 className="text-lg font-semibold text-gray-700">Total Impulse Spend</h3>
           </div>
           <p className="text-4xl font-bold text-amber-700">
-            {formatCurrency(stats.totalSpend)}
+            {formatCurrency(stats.totalSpend, defaultCurrency)}
           </p>
           <p className="text-sm text-gray-600 mt-2">
             Across {purchases.length} {purchases.length === 1 ? "purchase" : "purchases"}
@@ -63,7 +75,7 @@ export default function Dashboard({ purchases, onDeletePurchase }: DashboardProp
                 {stats.topTrigger.trigger}
               </p>
               <p className="text-xl font-semibold text-rose-600">
-                {formatCurrency(stats.topTrigger.amount)}
+                {formatCurrency(stats.topTrigger.amount, defaultCurrency)}
               </p>
             </>
           ) : (
@@ -92,7 +104,7 @@ export default function Dashboard({ purchases, onDeletePurchase }: DashboardProp
                       {purchase.itemName}
                     </span>
                     <span className="text-lg font-bold text-amber-600">
-                      {formatCurrency(purchase.price)}
+                      {formatCurrency(purchase.price, purchase.currency)}
                     </span>
                   </div>
                   <p className="text-sm text-gray-700 mb-1">
@@ -118,7 +130,7 @@ export default function Dashboard({ purchases, onDeletePurchase }: DashboardProp
                     })}
                   </p>
                   <p className="text-sm text-gray-600 mt-2 italic">
-                    "You spent {formatCurrency(purchase.price)} because of '{purchase.trigger}'"
+                    "You spent {formatCurrency(purchase.price, purchase.currency)} because of '{purchase.trigger}'"
                   </p>
                 </div>
                 <button
@@ -148,7 +160,7 @@ export default function Dashboard({ purchases, onDeletePurchase }: DashboardProp
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium text-gray-700">{trigger}</span>
                     <span className="text-sm font-semibold text-gray-800">
-                      {formatCurrency(amount)} ({percentage.toFixed(1)}%)
+                      {formatCurrency(amount, defaultCurrency)} ({percentage.toFixed(1)}%)
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">

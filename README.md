@@ -40,6 +40,7 @@ Then watch as patterns emerge:
 
 ### 📝 Intelligent Purchase Logging
 - **Item Name & Price**: Track what you bought and how much
+- **Multi-Currency Support**: Choose between PLN, EUR, or USD
 - **Date Selection**: When did this happen?
 - **Emotional Trigger Tracking**: Choose from 6 common impulse triggers:
   - 🥱 Boredom
@@ -185,7 +186,7 @@ The app icon will appear on your home screen!
 Click the **"Log a Purchase"** form and fill in:
 
 - **What did you buy?**: e.g., "Coffee", "New Shoes", "Takeout"
-- **How much?**: Enter the price in USD
+- **How much?**: Enter the price and select currency (PLN, EUR, or USD)
 - **When?**: Select the purchase date
 - **What triggered this?**: Choose from the dropdown:
   - Boredom
@@ -452,7 +453,7 @@ This project is licensed under the MIT License.
 
 ## 📮 Contact
 
-**Author**: Konstancja Tanjga (Big Hat Poland)  
+**Author**: Konstancja Tanjga (Big Hat Poland)  email: bighatpoland@gmail.com
 **Repository**: [github.com/bighatpoland/behavior-trace-demo](https://github.com/bighatpoland/behavior-trace-demo)
 
 ---
@@ -464,3 +465,4 @@ This project is licensed under the MIT License.
 ⭐ Star this repo if you find it helpful!
 
 </div>
+

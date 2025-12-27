@@ -33,9 +33,15 @@ export const calculateStats = (purchases: Purchase[]): BehaviorStats => {
   };
 };
 
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat("en-US", {
+export const formatCurrency = (amount: number, currency: string = "USD"): string => {
+  const localeMap: Record<string, string> = {
+    USD: "en-US",
+    EUR: "de-DE",
+    PLN: "pl-PL",
+  };
+  
+  return new Intl.NumberFormat(localeMap[currency] || "en-US", {
     style: "currency",
-    currency: "USD",
+    currency: currency,
   }).format(amount);
 };

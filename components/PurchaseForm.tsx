@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Purchase, TriggerType } from "@/types";
+import { Purchase, TriggerType, Currency } from "@/types";
 import { Plus, Camera } from "lucide-react";
 import BarcodeScanner from "./BarcodeScanner";
 import StarRating from "./StarRating";
@@ -19,6 +19,8 @@ const triggers: TriggerType[] = [
   "Peer Pressure",
 ];
 
+const currencies: Currency[] = ["USD", "EUR", "PLN"];
+
 export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
   const [itemName, setItemName] = useState("");
   const [price, setPrice] = useState("");
@@ -26,6 +28,7 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
   const [trigger, setTrigger] = useState<TriggerType>("Boredom");
   const [rating, setRating] = useState(0);
   const [barcode, setBarcode] = useState("");
+  const [currency, setCurrency] = useState<Currency>("USD");
   const [showScanner, setShowScanner] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -49,6 +52,7 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
       trigger,
       rating,
       barcode: barcode || undefined,
+      currency,
       createdAt: Date.now(),
     };
 
@@ -61,6 +65,7 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
     setTrigger("Boredom");
     setRating(0);
     setBarcode("");
+    setCurrency("USD");
   };
 
   const handleBarcodeScanned = (scannedBarcode: string) => {
@@ -92,19 +97,34 @@ export default function PurchaseForm({ onAddPurchase }: PurchaseFormProps) {
 
         <div>
           <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-            How much? (USD)
+            How much?
           </label>
-          <input
-            type="number"
-            id="price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            step="0.01"
-            min="0"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition"
-            placeholder="0.00"
-            required
-          />
+          <div className="flex gap-2">
+            <input
+              type="number"
+              id="price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              step="0.01"
+              min="0"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition"
+              placeholder="0.00"
+              required
+            />
+            <select
+              id="currency"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value as Currency)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition bg-white"
+              required
+            >
+              {currencies.map((curr) => (
+                <option key={curr} value={curr}>
+                  {curr}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div>
