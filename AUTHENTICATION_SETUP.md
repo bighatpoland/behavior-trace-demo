@@ -1,12 +1,14 @@
 # Authentication Setup Guide
 
-Your authentication system is now fully implemented! Here's how to set up OAuth providers to enable Google and GitHub login.
+Your authentication system is now fully implemented with **Google, GitHub, Email, and Face ID/Biometric** support! Here's how to use it.
 
 ## Current Status ✅
 
 - [x] NextAuth.js installed and configured
 - [x] Prisma database with authentication tables
-- [x] Sign-in page with Google & GitHub buttons
+- [x] Sign-in page with Google, GitHub, & Email options
+- [x] Email/password registration and login
+- [x] Face ID / Touch ID / Biometric authentication
 - [x] Protected routes with authentication check
 - [x] User-specific data storage
 - [x] Automatic localStorage migration
@@ -14,10 +16,12 @@ Your authentication system is now fully implemented! Here's how to set up OAuth 
 
 ## What Works Now
 
-1. **Sign-in page** - Visit http://localhost:3000 to see the sign-in page
-2. **Database** - SQLite database created with User, Account, Session, and Purchase tables
-3. **UI Components** - SignIn, SignOut, UserAvatar components
-4. **Protected content** - Main app only accessible after sign-in
+1. **Sign-in page** - Three login options: Google OAuth, GitHub OAuth, or Email/Password
+2. **Email Registration** - Create account with email and password
+3. **Face ID Prompt** - After first sign-in, users can enable biometric login
+4. **Database** - SQLite database with User, Account, Session, Purchase, and WebAuthnCredential tables
+5. **UI Components** - SignIn, SignOut, UserAvatar, FaceIDPrompt components
+6. **Protected content** - Main app only accessible after sign-in
 
 ## To Enable Google OAuth
 
@@ -91,26 +95,62 @@ npm run dev
 
 ## Testing the Authentication
 
-1. **Start the dev server** (if not already running):
+### Email/Password Authentication (Works Immediately!)
+
+1. **Start the dev server**:
    ```bash
    npm run dev
    ```
 
-2. **Open the app** in your browser:
-   - http://localhost:3000
+2. **Open the app**: http://localhost:3000
 
-3. **You should see**:
-   - Sign-in page with Google and GitHub buttons
-   - Your app branding (Brain icon + title)
+3. **Create an account**:
+   - Click "Sign up"
+   - Enter your name, email, and password (min 6 characters)
+   - Click "Create Account"
+   - You'll be automatically signed in
 
-4. **After setting up OAuth**:
-   - Click "Continue with Google" or "Continue with GitHub"
-   - Sign in with your account
-   - You'll be redirected back to the app
-   - The main dashboard will load with your user info
+4. **Face ID Prompt**:
+   - After signing in, a modal will appear
+   - If your device supports Face ID/Touch ID/fingerprint, click "Enable Biometric Login"
+   Face ID / Biometric Authentication
 
-## Testing the Complete Flow
+### How It Works
 
+After your first sign-in (with any method), the app checks if your device supports biometric authentication. If it does, you'll see a prompt asking if you want to enable it.
+
+### Supported Methods
+
+- **iOS/macOS**: Face ID, Touch ID
+- **Android**: Fingerprint, face unlock, pattern
+- **Windows**: Windows Hello (fingerprint, face, PIN)
+
+### Benefits
+
+- Faster sign-in (no password needed)
+- More secure than passwords
+- Your biometric data never leaves your device
+- Works with WebAuthn standard
+
+### How to Enable
+
+1. Sign in with any method (email, Google, or GitHub)
+2. When the prompt appears, click "Enable Biometric Login"
+3. Follow your device's prompts to register
+4. Done! Next time you can use biometric login
+
+### How to Skip
+
+- Click "Maybe Later" in the prompt
+- The app won't ask again on this device
+- You can change this setting later in your account settings
+
+### Security Notes
+
+- Biometric data is stored locally on your device
+- The app only stores a public key (not your fingerprint/face)
+- Even if someone steals the public key, they can't use it without your biometric
+- Each device has its own credential
 ### First-Time User
 1. Click sign-in button
 2. Authorize with Google/GitHub
@@ -194,20 +234,24 @@ When deploying to production (e.g., Vercel):
 - [x] API routes protected (authentication check)
 - [x] CSRF protection (built into NextAuth)
 - [ ] OAuth credentials added (you need to do this)
-- [ ] Production environment variables set
-
-## Next Steps
-
-1. **Set up OAuth credentials** (see instructions above)
-2. **Test the authentication flow**
-3. **Verify purchases are saved per-user**
-4. **Consider adding more features**:
-   - Email/password authentication
-   - Password reset flow
-   - User profile page
-   - Export data functionality
-   - Account deletion
-
+- [ ] Production environment variables s with email/password support
+- `lib/db.ts` - Prisma client
+- `lib/storage.ts` - Database operations
+- `lib/webauthn.ts` - WebAuthn/Face ID utilities
+- `components/AuthProvider.tsx` - Session provider
+- `components/SignIn.tsx` - Sign-in page with email/password forms
+- `components/SignOut.tsx` - Sign-out button
+- `components/UserAvatar.tsx` - User display
+- `components/FaceIDPrompt.tsx` - Biometric setup modal
+- `app/api/auth/[...nextauth]/route.ts` - Auth API
+- `app/api/auth/register/route.ts` - Email registration API
+- `app/api/auth/webauthn/route.ts` - WebAuthn credential management
+- `app/api/purchases/route.ts` - Purchase API (GET, POST)
+- `app/api/purchases/[id]/route.ts` - Purchase API (DELETE)
+- `app/api/purchases/migrate/route.ts` - Migration API
+- `app/auth/signin/page.tsx` - Sign-in page
+- `app/auth/error/page.tsx` - Error page
+- `prisma/schema.prisma` - Database schema with password and WebAuthnCredential
 ## Files Created/Modified
 
 ### New Files:

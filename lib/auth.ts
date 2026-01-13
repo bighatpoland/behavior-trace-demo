@@ -29,9 +29,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        // For now, we'll skip password auth and just use OAuth
-        // You can implement user/password logic here later
-        return null;
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email as string },
+        }) as any;
+
+        if (!user || !user.password) {
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password as string,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
       },
     }),
   ],

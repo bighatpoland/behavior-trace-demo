@@ -10,11 +10,13 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Purchase } from "@/types";
 import { getPurchases } from "@/lib/localStorage";
+import { isPlatformAuthenticatorAvailable, registerWebAuthnCredential } from "@/lib/webauthn";
 import PurchaseForm from "@/components/PurchaseForm";
 import Dashboard from "@/components/Dashboard";
 import SignIn from "@/components/SignIn";
 import UserAvatar from "@/components/UserAvatar";
 import SignOut from "@/components/SignOut";
+import FaceIDPrompt from "@/components/FaceIDPrompt";
 import { Brain } from "lucide-react";
 
 export default function Home() {
@@ -22,6 +24,8 @@ export default function Home() {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMigrated, setIsMigrated] = useState(false);
+  const [showFaceIDPrompt, setShowFaceIDPrompt] = useState(false);
+  const [faceIDChecked, setFaceIDChecked] = useState(false);
 
   // Fetch purchases from API when authenticated
   useEffect(() => {
@@ -29,10 +33,83 @@ export default function Home() {
       fetchPurchases();
       // Check if we need to migrate localStorage data
       migrateLocalStorageIfNeeded();
+      // Check if we should prompt for Face ID
+      checkFaceIDPrompt();
     } else if (status === "unauthenticated") {
       setIsLoaded(true);
     }
   }, [status, session]);
+
+  const checkFaceIDPrompt = async () => {
+    if (faceIDChecked) return;
+    setFaceIDChecked(true);
+
+    // Check if user has already set up Face ID
+    const hasAskedKey = `faceIDAsked_${session?.user?.id}`;
+    const hasAlreadyAsked = localStorage.getItem(hasAskedKey);
+
+    if (hasAlreadyAsked) {
+      return; // Don't ask again
+    }
+
+    // Check if platform authenticator is available
+    const isAvailable = await isPlatformAuthenticatorAvailable();
+    
+    if (isAvailable) {
+      // Check if user already has WebAuthn credentials
+      try {
+        const response = await fetch("/api/auth/webauthn");
+        if (response.ok) {
+          const credentials = await response.json();
+          if (credentials.length === 0) {
+            // No credentials yet, show prompt
+            setShowFaceIDPrompt(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking WebAuthn credentials:", error);
+      }
+    }
+  };
+
+  const handleEnableFaceID = async () => {
+    if (!session?.user?.id || !session?.user?.email) {
+      return;
+    }
+
+    try {
+      const credential = await registerWebAuthnCredential(
+        session.user.id,
+        session.user.email
+      );
+
+      if (credential) {
+        // Save credential to server
+        const response = await fetch("/api/auth/webauthn", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credential),
+        });
+
+        if (response.ok) {
+          // Mark as asked
+          localStorage.setItem(`faceIDAsked_${session.user.id}`, "true");
+          setShowFaceIDPrompt(false);
+          alert("Face ID enabled successfully! You can now use biometric login.");
+        }
+      }
+    } catch (error) {
+      console.error("Error enabling Face ID:", error);
+      alert("Failed to enable Face ID. Please try again later.");
+    }
+  };
+
+  const handleSkipFaceID = () => {
+    if (session?.user?.id) {
+      localStorage.setItem(`faceIDAsked_${session.user.id}`, "true");
+    }
+    setShowFaceIDPrompt(false);
+  };
 
   const fetchPurchases = async () => {
     try {
