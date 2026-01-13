@@ -12,12 +12,16 @@ export interface Purchase {
   id: string;
   itemName: string;
   price: number;
-  date: string;
+  currency: Currency;
+  category: string;
   trigger: TriggerType;
   rating: number; // 1-5 stars
+  notes?: string;
   barcode?: string; // Optional barcode
-  currency: Currency; // Currency selection
-  createdAt: number;
+  timestamp: string;
+  // Legacy fields for backward compatibility
+  date?: string;
+  createdAt?: number;
 }
 
 export interface BehaviorStats {
